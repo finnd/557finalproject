@@ -167,7 +167,8 @@
               d3.tsv("us-state-names.tsv", function(genStateInfo) {
                   genStateInfo.forEach(function(d, i) {
                     stateInfo.push({'id' : genStateInfo[i].id, 
-                                    'code' : genStateInfo[i].code});
+                                    'code' : genStateInfo[i].code, 
+                                    'name': genStateInfo[i].name});
                   });
                   salaryData.forEach(function(d, i) {
                   	for (var j = 0; j < stateInfo.length; j++) {
@@ -239,6 +240,8 @@
                       for (var i = 0; i < stateInfo.length; i++) {
                         if (stateInfo[i].id == d.id) {
                           var clickedState = stateInfo[i].State;
+                          showCountyMap(stateInfo[i].name); 
+                          console.log(clickedState);
                           var picker = document.getElementById("statePicker");
                           var opts = picker.options;
                           for (var opt, j = 0; opt = opts[j]; j++) {
@@ -278,6 +281,33 @@
                 
             }); 
           });
+  function showCountyMap(state){
+
+    var url = "https://raw.githubusercontent.com/mattdellavolpe/US-Counties-TopoJSON/master/500k/" +state.toLowerCase()+".json"; 
+    d3.json(url, function(error, us) {
+      if (error) throw error;
+      var curMap = svg.selectAll(".countyPath").data(topojson.feature(us, us.objects.counties).features, function(d){
+        return d.id; 
+      })
+      curMap.exit().remove();
+       var counties = topojson.feature(us, us.objects.counties);
+       console.log(topojson.feature(us, us.objects.counties).features);
+        var path = d3.geoPath().projection(d3.geoMercator()
+        .fitExtent([[width/1.5,0],[width, height/2]], counties));
+      svg.append("g")
+        .attr("class", "states")
+        .selectAll("path")
+        .data(topojson.feature(us, us.objects.counties).features, function(d){ return d.id; })
+        .enter().append("path")
+        .attr("class", "countyPath")
+        .on("click", function(d){ clickState(d); }) //zoom in when clicked
+        .attr("d", path);
+
+      svg.append("path")
+      .attr("class", "county-borders")
+      .attr("d", path(us));
+    });
+  }
       </script>
       <script type="text/javascript">
 
