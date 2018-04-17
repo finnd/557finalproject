@@ -25,7 +25,7 @@
       }
       .states :hover{
         fill: #F03737;
-        
+
       }
       /*From studio 5*/
       div.tooltip {
@@ -110,7 +110,7 @@
       </div>
 
       <script>
-        var width = 750;
+        var width = window.innerWidth / 2.0;
         var height = 550;
         var timelineWidth = width;
         var timelineHeight = 100;
@@ -137,7 +137,6 @@
           var stateNames = [];
           var stateInfo = [];
           var winner = [];
-
           d3.json("us.json", function(map) {
             var data = topojson.feature(map, map.objects.states).features;
             d3.csv("12-17salarydata.csv", function(salaryData) {
@@ -161,6 +160,17 @@
                   	// console.log(stateInfo);
                   });
 
+                  // var colorScale = d3.scaleLinear()
+                  //           .domain([-60, -0, 0, 60])
+                  //           .range(["#0014cc", "#4d73ff", "#ff4d4f", "#cc0700"]);
+
+
+                  console.log(d3.extent(salaryData, function(d){ return d.Year_2017;}));
+                  var colorScale = d3.scaleLinear()
+                                     .domain([d3.min(salaryData, function(d){return d.Year_2017;}),  
+                                    d3.mean(salaryData, function(d){return d.Year_2017;}),d3.mean(salaryData, function(d){return d.Year_2017;}), d3.max(salaryData, function(d){return d.Year_2017;}),]).range(["#0014cc", "#4d73ff", "#ff4d4f", "#cc0700"]);
+
+
                   svg.append("g")
                     .attr("class", "states")
                     .selectAll("path")
@@ -168,6 +178,16 @@
                     .enter()
                     .append("path")
                     .attr("d", path)
+                    .attr("fill", function(d){
+                      for (var i = 0; i < stateInfo.length; i++) {
+                        if (stateInfo[i].id == d.id) {
+
+                            var sal = stateInfo[i].Year_2017;
+                            return colorScale(sal);
+                        }
+                      }
+
+                    })
          
                 
                     // Tooltip reference from Piazza
@@ -291,7 +311,7 @@
         left: 75
       };
 
-      var chartWidth = 600;
+      var chartWidth = window.innerWidth / 2.0;
       var chartHeight = 400;
       var svg1 = d3.select("#graph").append("svg")
                     .attr("width", chartWidth)
