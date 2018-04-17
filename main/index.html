@@ -260,14 +260,11 @@
                     });
                     
                    svg.append("g")
-                    .attr("class", "state-names")
+                    .attr("class")
                     .selectAll("text")
                     .data(data)
                     .enter()
                     .append("text")
-                    .text(function(d, i){
-                      return stateNames[d.id];
-                    })
 
                     // centroid from bl.ocks
                     .attr("x", function(d){
