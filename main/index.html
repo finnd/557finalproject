@@ -52,7 +52,7 @@
       }
   </style>
   <body>
-      <div id="map" style="height: 550; width: 750px; float:center; display: inline"></div>
+      <div id="map" float:center; display: inline"></div>
       <div id="graph" style="height: 500px; width: 750px; float:center; display: inline">
         <select id="statePicker" style="display: none">
   			<option value="AL">Alabama</option>
@@ -108,7 +108,7 @@
   			<option value="WY">Wyoming</option>
 		</select> </div>
       <script>
-        var width = 960;
+        var width = 2500;
         var height = 550;
 
           // Referenced Mike Bostock's exanple on bl.ocks
@@ -281,9 +281,41 @@
                 
             }); 
           });
+  
   function showCountyMap(state){
-
-    var url = "https://raw.githubusercontent.com/mattdellavolpe/US-Counties-TopoJSON/master/500k/" +state.toLowerCase()+".json"; 
+	
+	if(state == "New York")
+	{
+		var url = "https://raw.githubusercontent.com/mattdellavolpe/US-Counties-TopoJSON/master/500k/new_york.json";
+	}   
+	else if(state == "New Hampshire")
+	{
+		var url = "https://raw.githubusercontent.com/mattdellavolpe/US-Counties-TopoJSON/master/500k/new_hampshire.json";
+	}   
+	else if(state == "New Jersey")
+	{
+		var url = "https://raw.githubusercontent.com/mattdellavolpe/US-Counties-TopoJSON/master/500k/new_jersey.json";
+	}   
+	else if(state == "Rhode Island")
+	{
+		var url = "https://raw.githubusercontent.com/mattdellavolpe/US-Counties-TopoJSON/master/500k/rhode_island.json";
+	}   
+	else if(state == "North Carolina")
+	{
+		var url = "https://raw.githubusercontent.com/mattdellavolpe/US-Counties-TopoJSON/master/500k/north_carolina.json";
+	}   
+	else if(state == "South Carolina")
+	{
+		var url = "https://raw.githubusercontent.com/mattdellavolpe/US-Counties-TopoJSON/master/500k/south_carolina.json";
+	}   
+	else if(state == "West Virginia")
+	{
+		var url = "https://raw.githubusercontent.com/mattdellavolpe/US-Counties-TopoJSON/master/500k/west_virginia.json";
+	}   
+	else
+	{               
+		var url = "https://raw.githubusercontent.com/mattdellavolpe/US-Counties-TopoJSON/master/500k/" + state.toLowerCase()+  ".json"; 
+    }
     d3.json(url, function(error, us) {
       if (error) throw error;
       var curMap = svg.selectAll(".countyPath").data(topojson.feature(us, us.objects.counties).features, function(d){
@@ -292,8 +324,24 @@
       curMap.exit().remove();
        var counties = topojson.feature(us, us.objects.counties);
        console.log(topojson.feature(us, us.objects.counties).features);
-        var path = d3.geoPath().projection(d3.geoMercator()
-        .fitExtent([[width/1.5,0],[width, height/2]], counties));
+       
+       
+      /*
+        var projection = d3.geoAlbersUsa()
+              .scale(1000)
+              .translate([500 , height/2]);
+                     
+        var path = d3.geoPath()
+                          .projection(projection);
+
+	 //this chunk makes it so the counties show up in the state when clicked.
+	*/
+	 
+	 var width = 1450;
+	 var height = 500;
+	 var path = d3.geoPath()
+	 	.projection(d3.geoMercator()
+       	   .fitExtent([[width/2,0],[width, height/2]], counties));
       svg.append("g")
         .attr("class", "states")
         .selectAll("path")
