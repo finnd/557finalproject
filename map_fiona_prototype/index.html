@@ -64,10 +64,8 @@
 
           var svg = d3.select("body")
                       .append("svg")
-                      .attr({
-                        width: width,
-                        height: height
-                      });
+                      .attr("width", width)
+                      .attr("height", height)
 
           // Tooltip code from Piazza
           var tooltip = d3.select("body")
@@ -107,9 +105,8 @@
                     .data(data)
                     .enter()
                     .append("path")
-                    .attr({
-                      "d": path,
-                    })
+                    .attr("d", path)
+                      
          
                 
                     // Tooltip reference from Piazza
