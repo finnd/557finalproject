@@ -351,10 +351,11 @@
 	 
 	if(url == "https://raw.githubusercontent.com/mattdellavolpe/US-Counties-TopoJSON/master/500k/alaska.json"){
 		var width = 2100;
+		var height = 600;
 	}
 	else{
-		width = 1450;
-	  height = 500;
+		width = 1500;
+	  height = 400;
 	 }
 	 var path = d3.geoPath()
 	 	.projection(d3.geoMercator()
