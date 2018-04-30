@@ -288,7 +288,6 @@
     var countydata = new Map();
     var flatsalaries = new Map().set("FY17", new Array());
     if (state == "Virginia"){
-      console.log("VIRGINIA CLICKED!!!")
       var src = "data/" + state.toLowerCase() + ".csv"
       var q = d3.queue();
       q.defer(function(callback, error) {
@@ -387,7 +386,10 @@
 	 }
  var colorScale = d3.scaleLinear()
                     .domain([d3.min(flatsalaries.get("FY17"), function(d){return d;}),  
-                     d3.mean(flatsalaries.get("FY17"), function(d){return d;}),d3.mean(flatsalaries.get("FY17"), function(d){return d;}), d3.max(flatsalaries.get("FY17"), function(d){return d;})]).range(["#0014cc", "#4d73ff", "#ff4d4f", "#cc0700"]);
+                     d3.mean(flatsalaries.get("FY17"), function(d){return d;}),
+                     d3.mean(flatsalaries.get("FY17"), function(d){return d;}), 
+                     d3.max(flatsalaries.get("FY17"), function(d){return d;})])
+                    .range(["#e0f2f9", "#9CDFF9", "#025d7f", "#023448"]);
 
 
 
@@ -408,12 +410,17 @@
         .attr("d", path)
         .attr("fill", function(d){
           var name = d.properties.name;
-          if (typeof name != 'undefined'){
+          try{
+            if (typeof name != 'undefined'){
             console.log(name);
             console.log(countydata.get(name));
             return colorScale(countydata.get(name).get("FY17"));
         }
+      } catch(err){
+        //pass
+      }
         });
+      
 
       svg.append("path")
       .attr("class", "county-borders")
