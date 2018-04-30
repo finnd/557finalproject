@@ -92,3 +92,39 @@
 096 Wise County Public Schools 49,693 47,463 (4.49%) 39,728 (16.30%)
 097 Wythe County Public Schools 47,288 46,744 (1.15%) 47,161 0.89%
 098 York County Public Schools 49,883 51,247 2.73% 52,531 2.51%
+101 Alexandria City Public Schools 72,942 73,675 1.00% 75,604 2.62%
+102 Bristol City Public Schools 43,926 42,972 (2.17%) 48,078 11.88%
+103 Buena Vista City Public Schools 40,483 40,131 (0.87%) 41,979 4.60%
+104 Charlottesville City Public Schools 54,886 56,214 2.42% 57,311 1.95%
+106 Colonial Heights City Public Schools 51,300 50,153 (2.24%) 50,464 0.62%
+107 Covington City Public Schools 51,141 48,040 (6.06%) 51,109 6.39%
+108 Danville City Public Schools 47,879 47,712 (0.35%) 47,239 (0.99%)
+109 Falls Church City Public Schools 66,589 69,686 4.65% 75,564 8.43%
+110 Fredericksburg City Public Schools 49,493 51,498 4.05% 52,655 2.25%
+111 Galax City Public Schools 46,328 47,259 2.01% 48,105 1.79%
+112 Hampton City Public Schools 47,516 47,413 (0.22%) 44,662 (5.80%)
+113 Harrisonburg City Public Schools 43,974 43,616 (0.81%) 43,990 0.86%
+114 Hopewell City Public Schools 48,013 45,443 (5.35%) 52,017 14.47%
+115 Lynchburg City Public Schools 39,037 47,337 21.26% 74,461 57.30%
+116 Martinsville City Public Schools 43,210 46,839 8.40% 48,345 3.22%
+117 Newport News City Public Schools 49,682 50,219 1.08% 51,148 1.85%
+118 Norfolk City Public Schools 49,908 48,118 (3.59%) 48,955 1.74%
+119 Norton City Public Schools 41,463 39,660 (4.35%) 39,390 (0.68%)
+120 Petersburg City Public Schools 42,150 42,814 1.58% 42,858 0.10%
+121 Portsmouth City Public Schools 38,872 51,576 32.68% 50,100 (2.86%)
+122 Radford City Public Schools 50,428 50,288 (0.28%) 50,720 0.86%
+123 Richmond City Public Schools 50,148 50,522 0.75% 53,778 6.44%
+124 Roanoke City Public Schools 50,509 47,845 (5.27%) 46,538 (2.73%)
+126 Staunton City Public Schools 46,730 46,208 (1.12%) 49,002 6.05%
+127 Suffolk City Public Schools 49,809 51,375 3.14% 50,611 (1.49%)
+128 Virginia Beach City Public Schools 56,048 56,128 0.14% 55,544 (1.04%)
+130 Waynesboro City Public Schools 47,484 44,594 (6.09%) 49,660 11.36%
+131 Williamsburg Public Schools³ 52,920 54,554 3.09% 53,123 (2.62%)
+132 Winchester City Public Schools 53,910 54,376 0.86% 54,598 0.41%
+135 Franklin City Public Schools 46,430 45,592 (1.80%) 39,625 (13.09%)
+136 Chesapeake City Public Schools 56,484 56,156 (0.58%) 57,078 1.64%
+137 Lexington City Public Schools 39,402 40,127 1.84% 41,889 4.39%
+139 Salem City Public Schools 55,115 55,353 0.43% 59,420 7.35%
+142 Poquoson City Public Schools 46,887 48,519 3.48% 49,523 2.07%
+143 Manassas City Public Schools 62,534 64,124 2.54% 67,333 5.00%
+144 Manassas Park City Public Schools 58,089 58,942 1.47% 62,097 5.35%

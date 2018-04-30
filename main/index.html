@@ -281,8 +281,36 @@
                 
             }); 
           });
+
+  
   
   function showCountyMap(state){
+    var countydata = new Map();
+    var flatsalaries = new Map().set("FY17", new Array());
+    if (state == "Virginia"){
+      console.log("VIRGINIA CLICKED!!!")
+      var src = "data/" + state.toLowerCase() + ".csv"
+      var q = d3.queue();
+      q.defer(function(callback, error) {
+        d3.csv(src, function(input){
+          input.forEach(function(data){
+          var sals = new Map();
+          var county = data['COUNTY'];
+          sals.set("FY17", +data['FY17']);
+          sals.set("FY16", +data['FY16']);
+          sals.set("FY15", +data['FY15']);
+          flatsalaries.get("FY17").push(+data['FY17']);
+          countydata.set(county, sals);
+        });
+          callback(null);
+      });
+       
+    });
+
+    q.await(function(error){
+      // pass
+    });
+  }
 	
 	if(state == "New York")
 	{
@@ -357,6 +385,14 @@
 		width = 1500;
 	  height = 400;
 	 }
+ var colorScale = d3.scaleLinear()
+                    .domain([d3.min(flatsalaries.get("FY17"), function(d){return d;}),  
+                     d3.mean(flatsalaries.get("FY17"), function(d){return d;}),d3.mean(flatsalaries.get("FY17"), function(d){return d;}), d3.max(flatsalaries.get("FY17"), function(d){return d;})]).range(["#0014cc", "#4d73ff", "#ff4d4f", "#cc0700"]);
+
+
+
+ 
+
 	 var path = d3.geoPath()
 	 	.projection(d3.geoMercator()
        	   .fitExtent([[width/2,0],[width, height/2]], counties));
@@ -366,12 +402,23 @@
         .data(topojson.feature(us, us.objects.counties).features, function(d){ return d.id; })
         .enter().append("path")
         .attr("class", "countyPath")
-        .on("click", function(d){ clickState(d); }) //zoom in when clicked
-        .attr("d", path);
+        .on("click", function(d){ 
+               console.log(d.properties.name);
+             })
+        .attr("d", path)
+        .attr("fill", function(d){
+          var name = d.properties.name;
+          if (typeof name != 'undefined'){
+            console.log(name);
+            console.log(countydata.get(name));
+            return colorScale(countydata.get(name).get("FY17"));
+        }
+        });
 
       svg.append("path")
       .attr("class", "county-borders")
       .attr("d", path(us));
+
     });
   }
       </script>
