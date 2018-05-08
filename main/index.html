@@ -401,6 +401,7 @@
                             .style("top", (d3.event.pageY ) + "px")
                             .style("opacity", .9); 
                     })
+                    /*following code adapted from https://bl.ocks.org/andrew-reid/f5b4227c93d197d69cf73e62c73afef3*/
                     .on("click", function (d) {
 					 svg.selectAll('path').attr('class','states'); 
 					  d3.selectAll('path').on("mouseover", function (d) 
