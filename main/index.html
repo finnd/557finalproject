@@ -50,8 +50,56 @@
         stroke: black;
         stroke-width: 2px;
       }
+      .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+  /* Modal Content/Box */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+  }
+
+/* The Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
   </style>
   <body>
+    <div id="myModal" class="modal">
+
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <h3 id="countymodalheader"></h3>
+          <p id="singleadult"></p>
+          <p id="onechildfamily"></p>
+          <p id="twochildfamily"></p>
+    </div>
+
+    </div>
+
 
       <div id="map" style = "float:center; display: inline"></div>
        <div>
@@ -127,7 +175,17 @@
       <script>
         var width = 2500;
         var height = 550;
+        var modal = document.getElementById('myModal');
+        var span = document.getElementsByClassName("close")[0];
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
 
+        window.onclick = function(event) {
+          if (event.target == modal) {
+               modal.style.display = "none";
+          }
+        } 
           // Referenced Mike Bostock's exanple on bl.ocks
           var projection = d3.geoAlbersUsa()
               .scale(1000)
@@ -557,8 +615,10 @@
         .attr("class", "countyPath")
         .on("click", function(d){ 
             var name = d.properties.name;
-            console.log(name);
-            console.log(countydata.get(name).get(ftype));
+            var countyliving = countydata.get(name);
+            document.getElementById("countymodalheader").textContent = "Living Wages for: " + name + ", " + state;
+            document.getElementById("singleadult").textContent = "Single Adult: " + countydata.get(name).get("SINGLE"); 
+            modal.style.display = "block";
              })
         .attr("d", path)
         .attr("fill", function(d){
@@ -735,5 +795,6 @@
 
 }
   </script>
+
     </body>
 </html>
