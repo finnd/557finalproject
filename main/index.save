@@ -62,14 +62,6 @@
         </form>
       </div>
 
-      <div>
-        <form id ="familytype">
-          <input type="radio" id="SINGLE" name="ftype" value ="SINGLE" checked>Single</input>
-          <input type="radio" id="ONECHILD" name="ftype" value="ONECHILD">One Child Family</input>
-          <input type="radio" id="TWOCHILD" name="ftype" value="TWOCHILD">Two Child Family</input>
-        </form>
-        </div>
-
       <div id="graph" style="height: 500px; width: 750px; float:center; display: inline">
         <select id="statePicker" style="display: none">
   			<option value="AL">Alabama</option>
@@ -155,16 +147,16 @@
                   });
           }); 
           d3.csv("data/salarystatedata.csv", function(salaryData) {
-              
                   salaryData.forEach(function(d, i) {
                     for (var j = 0; j < stateInfo.length; j++) {
-                      if (salaryData[i].STATE == stateInfo[j].code) {
+                      if (salaryData[i].STATE == stateInfo[j].name) {
                         stateInfo[j].State = salaryData[i].STATE;
                         stateInfo[j].Year_2017 = salaryData[i].FY2017;
                         stateInfo[j].Year_2016 = salaryData[i].FY2016;
                         stateInfo[j].Year_2015 = salaryData[i].FY2015;
                         stateInfo[j].Year_2014 = salaryData[i].FY2014;
                         stateInfo[j].Year_2013 = salaryData[i].FY2013;
+
                       }
                     }
                   });
@@ -182,7 +174,7 @@
 
       var filter = d3.select("#filter"); 
       filter.on("change", function(){
-         //console.log(stateInfo); 
+         console.log(stateInfo); 
         var value = d3.select('input[name="mode"]:checked').node().value;
         var startScale; 
         var increment; 
@@ -247,7 +239,7 @@
                 fill = colors[i]; 
               }
             } 
-            if (fill == undefined){ /*console.log(selectedState); //console.log(salary)*/ }
+            if (fill == undefined){ console.log(selectedState); console.log(salary); }
             return fill; 
         }); 
       });
@@ -296,7 +288,7 @@
                       var salary;
 
                       for (var i = 0; i < stateInfo.length; i++) {
-                        // //console.log(stateInfo[i].id == data.id);
+                        // console.log(stateInfo[i].id == data.id);
                         if (stateInfo[i].id == data.id) {
                           salary = stateInfo[i].Year_2017;
                           if ((salary > 40000) && (salary < 45000)) {
@@ -342,7 +334,7 @@
                         if (stateInfo[i].id == d.id) {
                           var clickedState = stateInfo[i].State;
                           showCountyMap(stateInfo[i].name); 
-                          //console.log(clickedState);
+                          console.log(clickedState);
                           var picker = document.getElementById("statePicker");
                           var opts = picker.options;
                           for (var opt, j = 0; opt = opts[j]; j++) {
@@ -383,84 +375,31 @@
   
   
   function showCountyMap(state){
-    var curstate = state;
     var countydata = new Map();
-    var flatwages = new Map().set("SINGLE", new Array()).set("ONECHILD", new Array()).set("TWOCHILD", new Array());
-
-    var src = "data/livingwage/" + state.toLowerCase() + "livingwage.csv";
-
-    var q = d3.queue();
-
-    q.defer(function(callback, err){
-      d3.csv(src, function(input){
-        input.forEach(function(data){
-          var lwdata = new Map();
+    var flatsalaries = new Map().set("FY17", new Array());
+    if (state == "Virginia"){
+      var src = "data/" + state.toLowerCase() + ".csv"
+      var q = d3.queue();
+      q.defer(function(callback, error) {
+        d3.csv(src, function(input){
+          input.forEach(function(data){
+          var sals = new Map();
           var county = data['COUNTY'];
-          lwdata.set("SINGLE", +data['SINGLE']);
-          lwdata.set("ONECHILD", +data['ONECHILD']);
-          lwdata.set("TWOCHILD", +data['TWOCHILD']);
-          flatwages.get("SINGLE").push(+data['SINGLE']);
-          flatwages.get("ONECHILD").push(+data['ONECHILD']);
-          flatwages.get("TWOCHILD").push(+data['TWOCHILD']);
-          countydata.set(county, lwdata)
+          sals.set("FY17", +data['FY17']);
+          sals.set("FY16", +data['FY16']);
+          sals.set("FY15", +data['FY15']);
+          flatsalaries.get("FY17").push(+data['FY17']);
+          countydata.set(county, sals);
         });
-
-        callback(null);
+          callback(null);
       });
-
+       
     });
 
     q.await(function(error){
-    
-    
-
-    console.log(countydata);
-    console.log(flatwages);
-
-    var familytypepicker = d3.select("#familytype");
-    var ftype = d3.select('input[name="ftype"]:checked').node().value;
-    console.log(ftype);
-    var colorScale = d3.scaleLinear()
-                     .domain([d3.min(flatwages.get(ftype), function(d){return d;}),  
-                      d3.mean(flatwages.get(ftype), function(d){return d;}),
-                      d3.mean(flatwages.get(ftype), function(d){return d;}), 
-                      d3.max(flatwages.get(ftype), function(d){return d;})])
-                     .range(["#e0f2f9", "#9CDFF9", "#025d7f", "#023448"]);
-
-
-
-
-    familytypepicker.on("change", function(){
-      var value = d3.select('input[name="ftype"]:checked').node().value;
-      showCountyMap(curstate)
-      return;
+      // pass
     });
-
-
-
-    // if (state == "Virginia"){
-    //   var src = "data/" + state.toLowerCase() + ".csv"
-    //   var q = d3.queue();
-    //   q.defer(function(callback, error) {
-    //     d3.csv(src, function(input){
-    //       input.forEach(function(data){
-    //       var sals = new Map();
-    //       var county = data['COUNTY'];
-    //       sals.set("FY17", +data['FY17']);
-    //       sals.set("FY16", +data['FY16']);
-    //       sals.set("FY15", +data['FY15']);
-    //       flatsalaries.get("FY17").push(+data['FY17']);
-    //       countydata.set(county, sals);
-    //     });
-    //       callback(null);
-    //   });
-       
-    // });
-
-    // q.await(function(error){
-    //   // pass
-    // });
-  
+  }
 	
 	if(state == "New York")
 	{
@@ -513,7 +452,7 @@
       })
       curMap.exit().remove();
        var counties = topojson.feature(us, us.objects.counties);
-       //console.log(topojson.feature(us, us.objects.counties).features);
+       console.log(topojson.feature(us, us.objects.counties).features);
        
        
       /*
@@ -535,12 +474,12 @@
 		width = 1500;
 	  height = 400;
 	 }
- // var colorScale = d3.scaleLinear()
- //                    .domain([d3.min(flatsalaries.get("FY17"), function(d){return d;}),  
- //                     d3.mean(flatsalaries.get("FY17"), function(d){return d;}),
- //                     d3.mean(flatsalaries.get("FY17"), function(d){return d;}), 
- //                     d3.max(flatsalaries.get("FY17"), function(d){return d;})])
- //                    .range(["#e0f2f9", "#9CDFF9", "#025d7f", "#023448"]);
+ var colorScale = d3.scaleLinear()
+                    .domain([d3.min(flatsalaries.get("FY17"), function(d){return d;}),  
+                     d3.mean(flatsalaries.get("FY17"), function(d){return d;}),
+                     d3.mean(flatsalaries.get("FY17"), function(d){return d;}), 
+                     d3.max(flatsalaries.get("FY17"), function(d){return d;})])
+                    .range(["#e0f2f9", "#9CDFF9", "#025d7f", "#023448"]);
 
 
 
@@ -556,23 +495,13 @@
         .enter().append("path")
         .attr("class", "countyPath")
         .on("click", function(d){ 
-            var name = d.properties.name;
-            console.log(name);
-            console.log(countydata.get(name).get(ftype));
+               console.log(d.properties.name);
+               console.log(state)
              })
         .attr("d", path)
         .attr("fill", function(d){
           var name = d.properties.name;
-          try{
-            if (typeof name != 'undefined'){
-            
-            return colorScale(countydata.get(name).get(ftype)); 
-            
-        }
-      } catch(err){
-        //pass
-      }
-  
+         
         });
       
 
@@ -581,8 +510,6 @@
       .attr("d", path(us));
 
     });
-
-  });
   }
       </script>
       <script type="text/javascript">
@@ -606,15 +533,15 @@
     reverseYearIndexMap.set(2013, 0).set(2014, 1).set(2015, 2).set(2016, 3).set(2017, 4);
     var parseTime = d3.timeParse("%Y");
     var years = [2013,2014,2015,2016,2017];
-    d3.csv("data/salarystatedata.csv", function(input){
+    d3.csv("data/12-17salarydata.csv", function(input){
       input.forEach(function(d) {
         var salMap = new Map();
-        salMap.set(parseTime(2017), +d['FY2017']);
-        salMap.set(parseTime(2016), +d['FY2016']);
-        salMap.set(parseTime(2015), +d['FY2015']);
-        salMap.set(parseTime(2014), +d['FY2014']);
-        salMap.set(parseTime(2013), +d['FY2013']);
-        stateDataMap.set(d['STATE'], salMap);
+        salMap.set(parseTime(2017), +d['2017']);
+        salMap.set(parseTime(2016), +d['2016']);
+        salMap.set(parseTime(2015), +d['2015']);
+        salMap.set(parseTime(2014), +d['2014']);
+        salMap.set(parseTime(2013), +d['2013']);
+        stateDataMap.set(d['State'], salMap);
 
       });
 
@@ -631,7 +558,7 @@
 
       });
 
-      //console.log(cpiData);
+      console.log(cpiData);
 
       var margin = {
         top: 75,
@@ -667,7 +594,7 @@
 
       g.append("g")
        .attr("transform", "translate(0," + height + ")")
-       .call(d3.axisBottom(xVals).tickFormat(d3.timeFormat("%Y")).ticks(5));
+       .call(d3.axisBottom(xVals));
 
       g.append("g")
        .call(d3.axisLeft(yVals));
@@ -699,15 +626,15 @@
         .attr("stroke", "blue");
 
        var sampleMap = stateDataMap.get(currentState);
-       //console.log(sampleMap);
-       //console.log(yearIndexMap);
-       //console.log(Array.from(sampleMap.values())[yearIndexMap.get(2017)]);
+       console.log(sampleMap);
+       console.log(yearIndexMap);
+       console.log(Array.from(sampleMap.values())[yearIndexMap.get(2017)]);
 
        var arr = Array.from(stateDataMap.get(currentState).keys());
-       //console.log(arr);
+       console.log(arr);
        var target = parseTime(2017);
-       //console.log(target);
-       //console.log(stateDataMap.get(currentState).get(target));
+       console.log(target);
+       console.log(stateDataMap.get(currentState).get(target));
        g.selectAll(".point")
          .data(years)
          .enter()

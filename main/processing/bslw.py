@@ -43,15 +43,27 @@ def getCountyLivingWage(county, state):
     with open (state + "livingwage.txt", 'a') as f:
         f.write(county[0] + "," + oneadult + "," + oneadultonechild + "," + oneadulttwochild + "\n")
 
+def getStateLivingWage(state):
+    url = state[1]
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    rows = soup.find_all('td')
+
+    oneadult = rows[155].get_text().strip().replace("$","").replace(",","")
+    oneadultonechild = rows[156].get_text().strip().replace("$", "").replace(",", "")
+    oneadulttwochild = rows[157].get_text().strip().replace("$", "").replace(",", "")
+
+    with open("allstateslivingwage.txt", 'a') as f:
+        f.write(state[0] + "," + oneadult + "," + oneadultonechild + "," + oneadulttwochild + "\n")
+
+
 if __name__ == "__main__":
     page = pullStatePage("http://livingwage.mit.edu/states/01/locations")
-    state_links = getStateLinks("http://livingwage.mit.edu/")
+    state_links = getStateLinks("http://livingwage.mit.edu")
 ##    alabama_links = getCountyLinks(state_links[0])
 ##    for link in alabama_links:
 ##        getCountyLivingWage(link, state_links[0][0])
 
-    for link in state_links:
-        state = link[0]
-        county_links = getCountyLinks(link)
-        for county in county_links:
-            getCountyLivingWage(county, state)
+    state_links = list(map(lambda entry: (entry[0], entry[1].replace("/locations", "")), state_links))
+    for state in state_links:
+        getStateLivingWage(state)
