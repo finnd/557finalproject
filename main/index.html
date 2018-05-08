@@ -2,13 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Teacher Salary per County</title> 
+    <title>Teacher Salaries</title> 
 
     <script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
     <script src="http://d3js.org/topojson.v1.min.js"></script>
   </head>
   <header>
-      <h1 style="font-family: sans-serif; text-align: center;">Teacher Salary per County</h1>
+      <h3 style="font-family: sans-serif; text-align: left;"><u>Can I afford to teach? Salaries as compared to living wage for U.S. Public School Teachers</u></h3>
+      <br>
+      <br>
   </header>
   <style>
   	#graph{
@@ -93,10 +95,12 @@
       <div class="modal-content">
           <span class="close">&times;</span>
           <h3 id="countymodalheader"></h3>
+          <p style="color:grey"><u><b>Salary Information</b></u></p>
+          <p id="salary"></p>
+          <p style="color:grey"><u><b>Living Wage Information</b></u></p>
           <p id="singleadult"></p>
           <p id="onechildfamily"></p>
           <p id="twochildfamily"></p>
-          <p id="salary"></p>
     </div>
 
     </div>
@@ -104,6 +108,7 @@
 
       <div id="map" style = "float:center; display: inline"></div>
        <div>
+        <p><b><u> Select data to color country map by: </u></b></p>
         <form id = "filter">
           <input  type='radio' id="Salary" name = "mode" value = "Salary" checked>Salary</input>
           <input type='radio' id="CPI" name="mode" value = "Wage">Living Wage</input>
@@ -112,6 +117,7 @@
       </div>
 
       <div>
+        <p><b><u> Select your family type for county map coloring </u></b></p>
         <form id ="familytype">
           <input type="radio" id="SINGLE" name="ftype" value ="SINGLE" checked>Single</input>
           <input type="radio" id="ONECHILD" name="ftype" value="ONECHILD">One Child Family</input>
@@ -443,8 +449,15 @@
   
   function showCountyMap(state){
     var curstate = state;
+    var stateObject;
+    for (var i = 0; i < stateInfo.length; i++) {
+          if (stateInfo[i].name == curstate) {
+            stateObject = stateInfo[i];
+          }
+        }
     var countydata = new Map();
     var flatwages = new Map().set("SINGLE", new Array()).set("ONECHILD", new Array()).set("TWOCHILD", new Array());
+    var flatdeltas = new Map().set("SINGLE", new Array()).set("ONECHILD", new Array()).set("TWOCHILD", new Array());
 
     var src = "data/livingwage/" + state.toLowerCase() + "livingwage.csv";
 
@@ -461,6 +474,10 @@
           flatwages.get("SINGLE").push(+data['SINGLE']);
           flatwages.get("ONECHILD").push(+data['ONECHILD']);
           flatwages.get("TWOCHILD").push(+data['TWOCHILD']);
+          flatdeltas.get("SINGLE").push(stateObject.Year_2017 - +data['SINGLE']);
+          flatdeltas.get("ONECHILD").push(stateObject.Year_2017 - +data['ONECHILD']);
+          flatdeltas.get("TWOCHILD").push(stateObject.Year_2017 - +data['TWOCHILD']);
+
           countydata.set(county, lwdata)
         });
 
@@ -473,8 +490,7 @@
     
     
 
-    console.log(countydata);
-    console.log(flatwages);
+    console.log(flatdeltas);
 
     var familytypepicker = d3.select("#familytype");
     var ftype = d3.select('input[name="ftype"]:checked').node().value;
@@ -485,8 +501,6 @@
                       d3.mean(flatwages.get(ftype), function(d){return d;}), 
                       d3.max(flatwages.get(ftype), function(d){return d;})])
                      .range(["#e0f2f9", "#9CDFF9", "#025d7f", "#023448"]);
-
-
 
 
     familytypepicker.on("change", function(){
@@ -615,16 +629,33 @@
         .enter().append("path")
         .attr("class", "countyPath")
         .on("click", function(d){ 
-            console.log(stateInfo);
+            
             var name = d.properties.name;
+            console.log(name);
             var countyliving = countydata.get(name);
+            var salary = String(stateObject.Year_2017).slice(0,2) + "," + String(stateObject.Year_2017).slice(2);
             var singlesalary = String(countyliving.get("SINGLE")).slice(0,2) + "," + String(countyliving.get("SINGLE")).slice(2);
             var onechildsalary = String(countyliving.get("ONECHILD")).slice(0,2) + "," + String(countyliving.get("ONECHILD")).slice(2);
             var twochildsalary = String(countyliving.get("TWOCHILD")).slice(0,2) + "," + String(countyliving.get("TWOCHILD")).slice(2);
-            document.getElementById("countymodalheader").innerHTML = "<u><b>Living Wages for:</b></u> " + name + ", " + state;
-            document.getElementById("singleadult").innerHTML = "<b>Single Adult:</b> $" + singlesalary; 
-            document.getElementById("onechildfamily").innerHTML = "<b>One Child Family:</b> $" + onechildsalary;
-            document.getElementById("twochildfamily").innerHTML = "<b>Two Child Family:</b> $" + twochildsalary;
+
+            var singleDelta = parseInt(stateObject.Year_2017) - parseInt(countyliving.get("SINGLE"));
+            var oneDelta = parseInt(stateObject.Year_2017) - parseInt(countyliving.get("ONECHILD"));
+            var twoDelta = parseInt(stateObject.Year_2017) - parseInt(countyliving.get("TWOCHILD"));
+
+            var scolor = singleDelta > 0 ? "red" : "blue";
+            var ocolor = oneDelta > 0 ? "red" : "blue";
+            var tcolor = twoDelta > 0 ? "red" : "blue";
+
+            var stoken = singleDelta > 0 ? "+" : "-";
+            var otoken = oneDelta > 0 ? "+" : "-";
+            var ttoken = twoDelta > 0 ? "+" : "-";
+
+
+            document.getElementById("countymodalheader").innerHTML = "<u><b>Information for:</b></u> " + name + ", " + state;
+            document.getElementById("singleadult").innerHTML = "<b>Single Adult:</b> $" + singlesalary + "\t\t" + "<em style='color:" + scolor + "'>(" + stoken + " $" + Math.abs(singleDelta) + ")</em>";
+            document.getElementById("onechildfamily").innerHTML = "<b>One Child Family:</b> $" + onechildsalary + "\t\t" + "<em style='color:" + ocolor + "'>(" + otoken + " $" +  Math.abs(oneDelta) + ")</em>";
+            document.getElementById("twochildfamily").innerHTML = "<b>Two Child Family:</b> $" + twochildsalary + "\t\t" + "<em style='color:" + tcolor + "'>(" + ttoken + " $" +  Math.abs(twoDelta) + ")</em>";
+            document.getElementById("salary").innerHTML = "<b> Average Teacher Salary:</b> $" + salary;
 
             modal.style.display = "block";
              })
@@ -634,7 +665,87 @@
           try{
             if (typeof name != 'undefined'){
             
-            return colorScale(countydata.get(name).get(ftype)); 
+            var countyLivingWage = countydata.get(name).get(ftype);
+            var countySalary = stateObject.Year_2017;
+            var delta = countySalary - countyLivingWage;
+            if(delta < 0){
+              if (delta >= -1000){
+                return "#ccd2ff";
+              }
+              if (delta >= -3000){
+                return "#99a5ff";
+              }
+
+              if (delta >= -5000){
+                return "#6678ff";
+              }
+
+              if (delta >= -7000){
+                return "#334bff";
+              }
+
+              if (delta >= -9000){
+                return "#001eff";
+              }
+
+              if (delta >= -11000){
+                return "#0018cc";
+              }
+
+              if (delta >= -12000){
+                return "#001299";
+              }
+
+              if (delta >= -16000){
+                return "#000c66";
+              } else {
+                return "#000633"
+              }
+            }
+            else {
+              if (delta <= 1000){
+                return "#ffe6e6";
+              }if (delta <= 2000){
+                return "#ffcccc";
+              }if (delta <= 3000){
+                return "#ffb3b3";
+              }if (delta <= 4000){
+                return "#ff9999";
+              }if (delta <= 5000){
+                return "#ff8080";
+              }if (delta <= 6000){
+                return "#ff6666";
+              }if (delta <= 7000){
+                return "#ff4d4d";
+              }if (delta <= 8000){
+                return "#ff3333";
+              }if (delta <= 9000){
+                return "#ff1919";
+              }if (delta <= 10000){
+                return "#ff0000";
+              }if (delta <= 11000){
+                return "#e60000";
+              }if (delta <= 12000){
+                return "#cc0000";
+              }if (delta <= 13000){
+                return "#b30000";
+              }if (delta <= 14000){
+                return "#990000";
+              }if (delta <= 15000){
+                return "#800000";
+              }if (delta <= 16000){
+                return "#660000";
+              }if (delta <= 17000){
+                return "#99001a";
+              }if (delta <= 18000){
+                return "#800015"
+              }if (delta <= 19000){
+                return "#660011";
+              }if (delta > 19000){
+                return "#800400";
+              }
+            }
+            // return colorScale(countydata.get(name).get(ftype)); 
             
         }
       } catch(err){
