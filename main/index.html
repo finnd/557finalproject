@@ -770,12 +770,13 @@
     var statePicker = document.getElementById("statePicker");
     statePicker.addEventListener("change", function(data){
       var selectedState = statePicker.options[statePicker.selectedIndex].value;
+      var state_name =  statePicker.options[statePicker.selectedIndex].text;
       d3.select("#graphsvg").remove();
-      draw(selectedState);
+      draw(selectedState, state_name);
 
     })
 
-    function draw(state){
+    function draw(state, state_name){
 
     var currentState = state;
 
@@ -843,6 +844,11 @@
                 .attr("y", 0 - 10)
                 .attr("stroke", "red")
                 .text("Salary");
+
+              g.append("text")
+                .attr("x", 0 + chartWidth / 9.0)
+                .attr("y", 0-10)
+                .text("Average Salary v.s. CPI for " + state_name + " (2013-2017)");
 
       var xVals = d3.scaleTime()
               .rangeRound([0, width])
