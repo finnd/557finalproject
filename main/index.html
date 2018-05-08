@@ -96,6 +96,7 @@
           <p id="singleadult"></p>
           <p id="onechildfamily"></p>
           <p id="twochildfamily"></p>
+          <p id="salary"></p>
     </div>
 
     </div>
@@ -614,10 +615,17 @@
         .enter().append("path")
         .attr("class", "countyPath")
         .on("click", function(d){ 
+            console.log(stateInfo);
             var name = d.properties.name;
             var countyliving = countydata.get(name);
-            document.getElementById("countymodalheader").textContent = "Living Wages for: " + name + ", " + state;
-            document.getElementById("singleadult").textContent = "Single Adult: " + countydata.get(name).get("SINGLE"); 
+            var singlesalary = String(countyliving.get("SINGLE")).slice(0,2) + "," + String(countyliving.get("SINGLE")).slice(2);
+            var onechildsalary = String(countyliving.get("ONECHILD")).slice(0,2) + "," + String(countyliving.get("ONECHILD")).slice(2);
+            var twochildsalary = String(countyliving.get("TWOCHILD")).slice(0,2) + "," + String(countyliving.get("TWOCHILD")).slice(2);
+            document.getElementById("countymodalheader").innerHTML = "<u><b>Living Wages for:</b></u> " + name + ", " + state;
+            document.getElementById("singleadult").innerHTML = "<b>Single Adult:</b> $" + singlesalary; 
+            document.getElementById("onechildfamily").innerHTML = "<b>One Child Family:</b> $" + onechildsalary;
+            document.getElementById("twochildfamily").innerHTML = "<b>Two Child Family:</b> $" + twochildsalary;
+
             modal.style.display = "block";
              })
         .attr("d", path)
