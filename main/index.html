@@ -146,17 +146,17 @@
                                     'name': genStateInfo[i].name});
                   });
           }); 
-          d3.csv("12-17salarydata.csv", function(salaryData) {
+          d3.csv("data/salarystatedata.csv", function(salaryData) {
               
                   salaryData.forEach(function(d, i) {
                     for (var j = 0; j < stateInfo.length; j++) {
-                      if (salaryData[i].State == stateInfo[j].code) {
-                        stateInfo[j].State = salaryData[i].State;
-                        stateInfo[j].Year_2017 = salaryData[i].Year_2017;
-                        stateInfo[j].Year_2016 = salaryData[i].Year_2016;
-                        stateInfo[j].Year_2015 = salaryData[i].Year_2015;
-                        stateInfo[j].Year_2014 = salaryData[i].Year_2014;
-                        stateInfo[j].Year_2013 = salaryData[i].Year_2013;
+                      if (salaryData[i].STATE == stateInfo[j].code) {
+                        stateInfo[j].State = salaryData[i].STATE;
+                        stateInfo[j].Year_2017 = salaryData[i].FY2017;
+                        stateInfo[j].Year_2016 = salaryData[i].FY2016;
+                        stateInfo[j].Year_2015 = salaryData[i].FY2015;
+                        stateInfo[j].Year_2014 = salaryData[i].FY2014;
+                        stateInfo[j].Year_2013 = salaryData[i].FY2013;
                       }
                     }
                   });
@@ -543,15 +543,15 @@
     reverseYearIndexMap.set(2013, 0).set(2014, 1).set(2015, 2).set(2016, 3).set(2017, 4);
     var parseTime = d3.timeParse("%Y");
     var years = [2013,2014,2015,2016,2017];
-    d3.csv("data/12-17salarydata.csv", function(input){
+    d3.csv("data/salarystatedata.csv", function(input){
       input.forEach(function(d) {
         var salMap = new Map();
-        salMap.set(parseTime(2017), +d['2017']);
-        salMap.set(parseTime(2016), +d['2016']);
-        salMap.set(parseTime(2015), +d['2015']);
-        salMap.set(parseTime(2014), +d['2014']);
-        salMap.set(parseTime(2013), +d['2013']);
-        stateDataMap.set(d['State'], salMap);
+        salMap.set(parseTime(2017), +d['FY2017']);
+        salMap.set(parseTime(2016), +d['FY2016']);
+        salMap.set(parseTime(2015), +d['FY2015']);
+        salMap.set(parseTime(2014), +d['FY2014']);
+        salMap.set(parseTime(2013), +d['FY2013']);
+        stateDataMap.set(d['STATE'], salMap);
 
       });
 
@@ -604,7 +604,7 @@
 
       g.append("g")
        .attr("transform", "translate(0," + height + ")")
-       .call(d3.axisBottom(xVals));
+       .call(d3.axisBottom(xVals).tickFormat(d3.timeFormat("%Y")).ticks(5));
 
       g.append("g")
        .call(d3.axisLeft(yVals));
