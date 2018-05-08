@@ -52,7 +52,16 @@
       }
   </style>
   <body>
-      <div id="map" float:center; display: inline"></div>
+
+      <div id="map" style = "float:center; display: inline"></div>
+       <div>
+        <form id = "filter">
+          <input  type='radio' id="Salary" name = "mode" value = "Salary" checked>Salary</input>
+          <input type='radio' id="CPI" name="mode" value = "Wage">Living Wage</input>
+          <input type='radio' id="Difference" name="mode" value = "Difference">Difference in Salary and Living Wage</input>
+        </form>
+      </div>
+
       <div id="graph" style="height: 500px; width: 750px; float:center; display: inline">
         <select id="statePicker" style="display: none">
   			<option value="AL">Alabama</option>
@@ -91,7 +100,7 @@
   			<option value="NC">North Carolina</option>
   			<option value="ND">North Dakota</option>
   			<option value="OH">Ohio</option>
- 			<option value="OK">Oklahoma</option>
+ 			  <option value="OK">Oklahoma</option>
   			<option value="OR">Oregon</option>
   			<option value="PA">Pennsylvania</option>
   			<option value="RI">Rhode Island</option>
@@ -130,6 +139,110 @@
                           .attr("class", "tooltip");
         
           var stateInfo = [];
+          d3.tsv("us-state-names.tsv", function(genStateInfo) {
+                  genStateInfo.forEach(function(d, i) {
+                    stateInfo.push({'id' : genStateInfo[i].id, 
+                                    'code' : genStateInfo[i].code, 
+                                    'name': genStateInfo[i].name});
+                  });
+          }); 
+          d3.csv("12-17salarydata.csv", function(salaryData) {
+              
+                  salaryData.forEach(function(d, i) {
+                    for (var j = 0; j < stateInfo.length; j++) {
+                      if (salaryData[i].State == stateInfo[j].code) {
+                        stateInfo[j].State = salaryData[i].State;
+                        stateInfo[j].Year_2017 = salaryData[i].Year_2017;
+                        stateInfo[j].Year_2016 = salaryData[i].Year_2016;
+                        stateInfo[j].Year_2015 = salaryData[i].Year_2015;
+                        stateInfo[j].Year_2014 = salaryData[i].Year_2014;
+                        stateInfo[j].Year_2013 = salaryData[i].Year_2013;
+                      }
+                    }
+                  });
+          }); 
+      d3.csv("data/allstateslivingwage.csv", function(wageData){
+        wageData.forEach(function(d, i){
+            if (stateInfo[i].code = wageData[i].STATE){
+                stateInfo[i].Single = wageData[i].SINGLE; 
+                stateInfo[i].One_Child = wageData[i].ONECHILD;  
+                stateInfo[i].Two_Child = wageData[i].TWOCHILD; 
+            } 
+        }); 
+      });
+
+
+      var filter = d3.select("#filter"); 
+      filter.on("change", function(){
+         console.log(stateInfo); 
+        var value = d3.select('input[name="mode"]:checked').node().value;
+        var startScale; 
+        var increment; 
+        var colors; 
+        if (value == "Salary"){
+              startScale = 40;
+              increment = 5;  
+              var salaryColor = ["#e0f2f9", "#9CDFF9", "#70d7ff", "#3bb0dd", "#199fd3", "#0291c9", "#025d7f", "#023448"]; 
+              var scale = d3.scaleOrdinal().range(salaryColor);
+              legend.selectAll("rect").style("fill", scale); 
+              colors = salaryColor; 
+        }
+        else if (value == "Wage"){
+              startScale = 20; 
+              increment = 2; 
+              var wageColor = ["#e0f2f9", "#9CDFF9", "#70d7ff", "#3bb0dd", "#199fd3", "#0291c9", "#025d7f", "#023448"]; 
+              var scale = d3.scaleOrdinal().range(wageColor);
+              legend.selectAll("rect").style("fill", scale); 
+              colors = wageColor; 
+          }
+          else if (value == "Difference"){
+              startScale = 18; 
+              increment = 5; 
+              var difColor = ["#e0f2f9", "#9CDFF9", "#70d7ff", "#3bb0dd", "#199fd3", "#0291c9", "#025d7f", "#023448"]; 
+              var scale = d3.scaleOrdinal().range(difColor);
+              legend.selectAll("rect").style("fill", scale); 
+              colors = difColor; 
+          }
+        var labelText = []; 
+        var tmpScale = startScale; 
+        for (var i =0; i < legendRange.length; i++){
+          labelText.push(tmpScale + "-" +(tmpScale + increment) + "k"); 
+           tmpScale += increment; 
+         }
+          legend.selectAll("text").text(function(d, i){ return labelText[d-1]; });
+
+        svg.selectAll(".states").selectAll(function(){ return this.childNodes; })
+        .attr("fill", function(d){
+          var selectedState; 
+          var salary; 
+
+          for (var i = 0; i < stateInfo.length; i++) {
+            if (stateInfo[i].id == d.id) {
+              selectedState = stateInfo[i]; 
+              }
+          }
+          if (value == "Salary"){
+              salary = selectedState.Year_2017;
+            }
+          else if (value == "Wage"){
+              salary = selectedState.Single;  
+            }
+          else if (value == "Difference"){
+              salary = selectedState.Year_2017 - selectedState.Single; 
+            }
+            
+            tmpScale = startScale; 
+            var fill; 
+            for (var i =0; i < legendRange.length; i++){
+              tmpScale += increment; 
+              if (salary <= tmpScale * 1000 && salary > (tmpScale - increment) * 1000){
+                fill = colors[i]; 
+              }
+            } 
+            if (fill == undefined){ console.log(selectedState); console.log(salary); }
+            return fill; 
+        }); 
+      });
 		  
 		  var legendRange = [1, 2, 3, 4, 5, 6, 7, 8];
           var legendLabels = ["$40-45k", "45-50k", "50-55k", "55-60k", "60-65k", "65-70k", "70-75k", "75-80k"]
@@ -163,26 +276,6 @@
           
           d3.json("us.json", function(map) {
             var data = topojson.feature(map, map.objects.states).features;
-            d3.csv("12-17salarydata.csv", function(salaryData) {
-              d3.tsv("us-state-names.tsv", function(genStateInfo) {
-                  genStateInfo.forEach(function(d, i) {
-                    stateInfo.push({'id' : genStateInfo[i].id, 
-                                    'code' : genStateInfo[i].code, 
-                                    'name': genStateInfo[i].name});
-                  });
-                  salaryData.forEach(function(d, i) {
-                  	for (var j = 0; j < stateInfo.length; j++) {
-                  		if (salaryData[i].State == stateInfo[j].code) {
-                  			stateInfo[j].State = salaryData[i].State;
-                  			stateInfo[j].Year_2017 = salaryData[i].Year_2017;
-                  			stateInfo[j].Year_2016 = salaryData[i].Year_2016;
-                  			stateInfo[j].Year_2015 = salaryData[i].Year_2015;
-                  			stateInfo[j].Year_2014 = salaryData[i].Year_2014;
-                  			stateInfo[j].Year_2013 = salaryData[i].Year_2013;
-                  		}
-                  	}
-                  });
-
                   svg.append("g")
                     .attr("class", "states")
                     .selectAll("path")
@@ -190,7 +283,7 @@
                     .enter()
                     .append("path")
                     .attr("d", path)
-                    
+
                     .attr("fill", function(data) {
                       var salary;
 
@@ -278,9 +371,6 @@
                     });
                  
                 });
-                
-            }); 
-          });
 
   
   
@@ -397,7 +487,7 @@
 
 	 var path = d3.geoPath()
 	 	.projection(d3.geoMercator()
-       	   .fitExtent([[width/2,0],[width, height/2]], counties));
+    .fitExtent([[width/2,0],[width, height/2]], counties));
       svg.append("g")
         .attr("class", "states")
         .selectAll("path")
@@ -410,15 +500,18 @@
         .attr("d", path)
         .attr("fill", function(d){
           var name = d.properties.name;
+          /*
           try{
             if (typeof name != 'undefined'){
             console.log(name);
             console.log(countydata.get(name));
-            return colorScale(countydata.get(name).get("FY17"));
+            console.log("here "+colorScale(countydata.get(name).get("FY17"))); 
+            
         }
       } catch(err){
         //pass
       }
+      */
         });
       
 
