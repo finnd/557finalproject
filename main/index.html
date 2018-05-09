@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <title>Teacher Salaries</title> 
 
-    <script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
-    <script src="http://d3js.org/topojson.v1.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   </head>
   <header>
@@ -187,7 +187,7 @@ i
           <input type="radio" id="TWOCHILD" name="ftype" value="TWOCHILD">Two Child Family</input>
         </form>
 
-        <p><b><u>You can also enter a custom salary filter. Any states below this salary will appear white</u></b></p>
+        <p><b><u>You can also enter a custom salary filter. Any states below this salary will appear grey</u></b></p>
         <input type="checkbox" id="customlimit" value="Custom Salary Minimum">Use Custom Minimum Salary</input>
         <input type="text" id="numlimit" placeholder="50000" class="w3-input"></input>
       </div>
@@ -428,7 +428,7 @@ i
             if (useCustomSalaryLimit){
               console.log("using custom salary limit");
               if (selectedState.Year_2017 < customSalary){
-                return "white";
+                return "#3e423f";
               } else {
                 return fill;
               }
